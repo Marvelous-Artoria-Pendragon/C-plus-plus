@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 
-//数组解决Josephus问题 ****
+//数组解决Josephus问题 ******
 int solve(int n, int s, int m)
 {
     int *arr = new int[n];
