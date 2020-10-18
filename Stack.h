@@ -29,9 +29,9 @@ class SeqStack: public Stack<T>
         SeqStack(int sz = 50);                              //建立一个空栈
         ~SeqStack() {delete[] elements;}                    //析构函数
         virtual void Push(const T &x);                      //如果IsFull(),则溢出处理；否则把x插入到栈的栈顶
-        virtual bool Pop(T &x);
-        virtual bool getTop(T &x) const;
-        virtual bool IsEmpty() const {return (top == -1) ? true:false;}
+        virtual bool Pop(T &x);                             //取出栈顶元素，赋值给x
+        virtual bool getTop(T &x) const;                    //获取栈顶元素的拷贝给x，不删除栈顶元素
+        virtual bool IsEmpty() const {return (top == -1) ? true:false;}             
         virtual bool IsFull() const {return (top == maxSize - 1) ? true:false;}
         virtual int getSize() const {return top + 1;}
         void makeEmpty() {top = -1;}                        //清空栈的内容
