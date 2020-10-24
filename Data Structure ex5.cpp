@@ -30,7 +30,7 @@ class Calculator
     public:
         Calculator() {infix = ""; operand_arr = new char[20];}            //构造函数,初始化数
         ~Calculator() {delete operand_arr;}
-        double Run();                                                       //执行表达式计算
+        double Run();                                                     //执行表达式计算
         void Clear();                                                     //清空操作数栈和操作符数组
         void readinfix(string str) {infix = str;}                         //读取中缀表达式
     private:
@@ -134,13 +134,15 @@ void Calculator::toPostfix()
 
     operand.Push(read); read = infix[i];                        //栈底放一个“#”， 读入一个字符
     while (!operand.IsEmpty() && read != '\0')                  //连续处理，栈不为空且中缀表达式未读完
+    {
+        if (read == ' ') {read = infix[++i]; iterstart++; continue;}    //处理空格，跳过
         if (isdigit(read))                                      //当前读到的字符是数字
         {
             if (regex_search(iterstart, iterend, result, pn))   //正则表达式匹配这个数字
             {
                 number.Push(stof(result[0].str()));             //将操作数压入操作数栈中
                 iterstart = result[0].second;                   //下一次从匹配到字符串的末位置开始匹配
-                i += result.length();
+                i += result[0].length();
                 read = infix[i];                                //继续读取字符
             }
             else {cerr << "未匹配到操作数!"; exit(1);}
@@ -158,13 +160,13 @@ void Calculator::toPostfix()
                         if (regex_search(iterstart, iterend, result, pn))
                         {
                             number.Push(stof(result[0].str()));
-                            iterstart = result[0].second;
+                            iterstart = result[0].second - 1;
                             i += result[0].length();
                         }
                         else {cerr << "未匹配到操作数!"; exit(1);}
                     }
-                    else {cerr << "括号包括非合法操作符!" << endl; exit(1);}
                 }
+                iterstart++;
                 read = infix[++i];                              //读入下一个字符
             }
             else if(isp(top) > icp(read))                       //新输入操作符read优先级低
@@ -175,9 +177,10 @@ void Calculator::toPostfix()
             else
             {
                 operand.Pop(op);                                //输入操作符优先级等于栈顶优先级(取出配对的括号)
-                if (op == '(') read = infix[++i];
+                if (op == '(') {read = infix[++i]; iterstart++;}
             }
         }
+    }
     operand_arr[j] = '#';                                       //添加一个'#'作为结束标记
 }
 
@@ -188,14 +191,17 @@ int main()
     cout << "请输入需要计算的表达式数量："; cin >> n;
     double *result = new double[n];
     cout << "请依次输入表达式：" << endl;
-    for (int i = 0; i < n; i++)
+    getline(cin, infix);                        //把cin留下的缓冲\n读取
+    for (int i = 0; i < n; i++)                 //循环计算表达式，将答案储存在result数组中
     {
-        cin >> infix;
+        getline(cin, infix);
         cl.readinfix(infix + "=");
         result[i] = cl.Run();
     }
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)                 //循环输出答案
     cout << result[i] << endl;
     system("pause");
     return 0;
 }
+
+//6.23+(9*(-1.5)-4)/0.4
