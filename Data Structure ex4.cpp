@@ -1,3 +1,7 @@
+/*
+将链表进行逆置
+*/
+
 #include <iostream>
 using namespace std;
 
@@ -17,7 +21,7 @@ class CircList
     public:
         CircList<T>();                                      //构造函数
         ~CircList<T>();                                     //析构函数
-        CircList<T>(CircList<T> &);                   //拷贝构造函数
+        CircList<T>(CircList<T> &);                         //拷贝构造函数
         void reverse();                                     //将链表元素逆转
         LinkNode<T> *getRear() {return rear;}               //返回尾指针
         template <class Y>
@@ -27,6 +31,7 @@ class CircList
         LinkNode<T> *rear;      //尾指针
 };
 
+//构造函数，默认生成7个结点
 template <class T>
 CircList<T>::CircList()
 {
@@ -34,7 +39,7 @@ CircList<T>::CircList()
     rear = new LinkNode<T>(i);                                              //初始化一个表头结点
     if (rear == NULL) {cerr << "存储分配错误！" << endl; exit(1);}           //动态分配失败
     rear->link = rear;                                                      //表头结点指向自己
-    while (i++ < 4)                                                           //创建7个结点
+    while (i++ < 7)                                                           //创建7个结点
     {
         LinkNode<T> *p = new LinkNode<T>(i);
         if (p == NULL) {cerr << "存储分配错误！" << endl; exit(1);}          //动态分配失败
@@ -44,6 +49,7 @@ CircList<T>::CircList()
     }
 }
 
+//析构函数
 template <class T>
 CircList<T>::~CircList()
 {
@@ -57,6 +63,7 @@ CircList<T>::~CircList()
     delete rear;
 }
 
+//拷贝构造函数
 template <class T>
 CircList<T>::CircList(CircList<T> &L)
 {
