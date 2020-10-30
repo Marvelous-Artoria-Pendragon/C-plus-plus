@@ -4,8 +4,7 @@
 #include <assert.h>
 #include <iostream>
 using namespace std;
-//#include "Stack.h"
-const int STACK_INCREASMENT = 20;           //栈溢出时扩展空间的增量
+//const int STACK_INCREASMENT = 20;           //栈溢出时扩展空间的增量
 //const int MAX_SIZE = 50;
 
 template <class T>
@@ -58,10 +57,10 @@ template <class T>
 void SeqStack<T>::overflowProcess ()
 {
     //扩充栈的存储空间
-    T *newArray = new T[maxSize + STACK_INCREASMENT];
+    T *newArray = new T[2 * maxSize];
     if (newArray == NULL) {cerr << "存储分配失败！" << endl; exit(1);}
     for (int i = 0; i <= top; i++) newArray[i] = elements[i];
-    maxSize = maxSize + STACK_INCREASMENT;
+    maxSize = 2 * maxSize;
     delete []elements;
     elements = newArray;
 };
