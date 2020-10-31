@@ -3,6 +3,7 @@
 #define BINARYTREE_H
 #include <iostream>
 #include "Stack.h"
+#include "Queue.h"
 using namespace std;
 
 template <class T>
@@ -151,6 +152,36 @@ void BinaryTree<T>::CreateBinTreeByList(istream &in, BinTreeNode<T> *&subTree)
     }
 }
 
+//私有函数：这个函数返回一个指针，它给出一个以orignode为根的二叉树的副本
+template <class T>
+BinTreeNode<T> *BinaryTree<T>::Copy(BinTreeNode<T> *orignode)
+{
+    if (orignode == NULL) return NULL;                          //根为空，返回空指针
+    BinTreeNode<T> *temp = new BinTreeNode<T>;                  //创建空结点
+    if (temp == NULL) {cerr << "存储分配错误！" << endl; exit(1);}
+    temp->data = orignode->data;                                //传送数据
+    temp->leftChild = Copy(orignode->leftChild);                //复制左子女
+    temp->rightChild = Copy(orignode->rightChild);              //复制右子女
+    return temp;
+}
+
+//判断两棵二叉树相等
+template <class T>
+int operator == (const BinaryTree<T> &s, const BinaryTree<T> &t)
+{return (equal(s.root, t.root)) ? true : false;}
+
+//如果a和b的子树不等同，则函数返回false，否则返回true
+template <class T>
+bool equal(BinTreeNode<T> *a, BinTreeNode<T> *b)
+{
+    if (a == NULL && b == NULL) return true;                    //两者都为空
+    if (a !+ NULL && b != NULL && a->data == b->data            //两者跟结点数据相等
+        && equal(a->leftChild, b->leftChild)                    //且左子树相同
+        && equal(a->rightChild, b->rightChild))                 //且右子树相同
+    return true;
+    else return false;
+}
+
 //递归前序遍历
 template <class T>
 void BinaryTree<T>::preOrder(BinTreeNode<T> *subTree, void (*visit)(BinTreeNode<T> *current))
@@ -187,5 +218,37 @@ void BinaryTree<T>::postOrder(BinTreeNode<T> *subTree, void (*visit)(BinTreeNode
     }
 }
 
+template <class T>
+void PringBinTreeByList(BinTreeNode<T> *subTree)
+{
+    if (subTree != NULL)                                //树为空结束递归
+    {
+        cout << subTree->data;                          //输出根结点的值
+        if (subTree->leftChild != NULL || subTree->rightChild != NULL)
+        {
+            cout << '(';                                //输出左括号
+            PringBinTreeByList(subTree->leftChild);     //递归输出左子树
+            cout << ',';
+            if (subTree->rightChild != NULL)            //右子树不为空
+            PringBinTreeByList(subTree->rightChild);    //递归输出右子树
+            cout << ')';                                //输出右括号
+        }
+    }
+}
+
+//利用队列实现层次序遍历
+template <class T>
+void BinaryTree<T>::leverOrder(void (*visit)(BinTreeNode<T> *current))
+{
+    Queue<BinTreeNode<T> * > Q;
+    BinTreeNode<T> *current = root;
+    Q.EnQueue(current);
+    while (!Q.isEmpty())                                //队列不为空
+    {
+        Q.DeQueue(current); visit(current);             //退出一个结点，访问
+        if (current->leftChild != NULL) Q.EnQueue(current->leftChild);        //左子女进队
+        if (current->rightChild != NULL) Q.EnQueue(current->rightChild);      //右子女进队
+    }
+}
 
 #endif //BINARYTREE_H
