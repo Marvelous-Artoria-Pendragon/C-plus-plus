@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Stack.h"
 #include "Queue.h"
+#include "LinkedList.h"
 using namespace std;
 
 template <class T>
@@ -19,47 +20,52 @@ struct BinTreeNode
 template <class T>
 class BinaryTree
 {
+    protected:
+        BinTreeNode<T> *root;                                                                   //二叉树的根指针
+        T RefValue;                                                                             //数据输入停止的标志
+        bool insert(BinTreeNode<T> *&subTree, const T &x);                                      //插入
+        void destroy(BinTreeNode<T> *&subTree);                                                 //删除
+        //bool Find(BinTreeNode<T> *subTree, const T &x) const;                                   //查找
+        BinTreeNode<T> *copy(BinTreeNode<T> *orignode) const;                                   //复制
+        int Height(BinTreeNode<T> *subTree) const;                                              //返回数的高度
+        int Size(BinTreeNode<T> *subTree) const;                                                //返回结点数
+        BinTreeNode<T> *Parent(BinTreeNode<T> *subTree, BinTreeNode<T> *current) const;         //返回父节点
+        BinTreeNode<T> *find(BinTreeNode<T> *subTree, const T &x) const;                        //搜寻x，函数返回该结点地址
+        void traverse(BinTreeNode<T> *subTree, ostream &out) const;                             //前序遍历输出
+        void preOrder(BinTreeNode<T> *subTree, void (*visit)(BinTreeNode<T> *current));         //前序遍历
+        void inOrder(BinTreeNode<T> *subTree, void (*visit)(BinTreeNode<T> *current));          //中序遍历
+        void postOrder(BinTreeNode<T> *subTree, void (*visit)(BinTreeNode<T> *current));        //中序遍历
+        template<class Y>
+        friend istream &operator >> (istream &in, BinaryTree<Y> &Tree);                         //重载输入流
+        void CreateBinTree(istream &in, BinTreeNode<T> *&subTree);                              //前序遍历递归建树
+        void CreateBinTreeByList(istream &in, BinTreeNode<T> *&subTree);                        //根据输入广义表建树
+
+        template<class Y>
+        friend ostream &operator << (ostream &out, BinaryTree<Y> &Tree);                        //重载输出流
     public:
         BinaryTree(): root(NULL){};                                                             //构造函数
         BinaryTree(T value): RefValue(value), root(NULL){};                                     //设定停止输入标志的构造函数
         BinaryTree(BinaryTree<T> &s);                                                           //拷贝构造函数
         ~BinaryTree() {destroy(root);}                                                          //析构函数
-        bool isEmpty() {return (root == NULL ? true : false);}                                  //判断二叉树空否
+        bool isEmpty() const {return (root == NULL ? true : false);}                            //判断二叉树空否
         BinTreeNode<T> *Parent(BinTreeNode<T> *current)                                         //返回父节点
             {return (root == NULL || root == current) ? NULL : Parent(root, current);}
         BinTreeNode<T> *LeftChild(BinTreeNode<T> *current)                                      //返回左子女
             {return (current != NULL) ? current->leftChild : NULL;}
         BinTreeNode<T> *RightChild(BinTreeNode<T> *current)                                     //返回右子女
             {return (current != NULL) ? current->rigthChild : NULL;}
-        int Height(){return Height(root);}                                                      //返回树高度
-        int Size() {return Size(root);}                                                         //返回结点数
+        int Height() const {return Height(root);}                                               //返回树高度
+        int Size() const {return Size(root);}                                                   //返回结点数
         BinTreeNode<T> *getRoot() const{return root;}                                           //返回根结点
         void preOrder(void (*visit)(BinTreeNode<T> *current)) {preOrder(root, visit);}          //前序遍历
         void inOrder(void (*visit)(BinTreeNode<T> *current)) {inOrder(root, visit);}            //中序遍历
         void postOrder(void (*visit)(BinTreeNode<T> *current)) {postOrder(root, visit);}        //后序遍历
         void leverOrder(void (*visit)(BinTreeNode<T> *current));                                //层次遍历
-        int Insert(const T &item);                                                              //插入新元素
-        BinTreeNode<T> *Find(T &item) const;                                                    //搜索
-    protected:
-        BinTreeNode<T> *root;                                                                   //二叉树的根指针
-        T RefValue;                                                                             //数据输入停止的标志
-        void CreateBinTree(istream &in, BinTreeNode<T> *&subTree);                              //前序遍历递归建树
-        void CreateBinTreeByList(istream &in, BinTreeNode<T> *&subTree);                        //根据输入广义表建树
-        bool Insert(BinTreeNode<T> *&subTree, const T &x);                                      //插入
-        void destroy(BinTreeNode<T> *&subTree);                                                 //删除
-        bool Find(BinTreeNode<T> *subTree, const T &x) const;                                   //查找
-        BinTreeNode<T> *Copy(BinTreeNode<T> *orignode);                                         //复制
-        int Height(BinTreeNode<T> *subTree) const;                                              //返回数的高度
-        int Size(BinTreeNode<T> *subTree) const;                                                //返回结点数
-        BinTreeNode<T> *Parent(BinTreeNode<T> *subTree, BinTreeNode<T> *current);               //返回父节点
-        //BinTreeNode<T> *Find(BinTreeNode<T> *subTree, const T &x) const;                       //搜寻x
-        void Traverse(BinTreeNode<T> *subTree, ostream &out);                                   //前序遍历输出
-        void preOrder(BinTreeNode<T> *subTree, void (*visit)(BinTreeNode<T> *current));         //前序遍历
-        void inOrder(BinTreeNode<T> *subTree, void (*visit)(BinTreeNode<T> *current));          //中序遍历
-        void postOrder(BinTreeNode<T> *subTree, void (*visit)(BinTreeNode<T> *current));        //中序遍历
-        friend istream &operator >> (istream &in, BinaryTree<T> &Tree);                         //重载输入流
-        friend ostream &operator << (ostream &out, BinaryTree<T> &Tree);                        //重载输出流
-
+        int insert(const T &item);                                                              //插入新元素
+        //根据值找到该结点，并通过引用返回存储所有祖先结点的栈
+        bool findAncestors(BinTreeNode<T> *subTree, const T &item, Stack<BinTreeNode<T> *> &s) const;
+        //将以current为根结点的所有叶子结点从左往右连接成一个链表，返回首地址
+        void leafLinkedList(BinTreeNode<T> *current, LinkNode<T> *&last);
 };
 
 //私有函数：若指针subTree不为空，则删除根为subTree的子树
@@ -68,47 +74,47 @@ void BinaryTree<T>::destroy(BinTreeNode<T> *&subTree)
 {
     if (subTree != NULL)
     {
-        destroy(current->leftChild);                                //递归删除subTree的左子树
-        destroy(current->rightChild);                               //递归删除subTree的右子树
-        delete subtTree;                                            //递归删除subTree
+        destroy(subTree->leftChild);                                //递归删除subTree的左子树
+        destroy(subTree->rightChild);                               //递归删除subTree的右子树
+        delete subTree;                                            //递归删除subTree
     }
 }
 
 //私有函数：从结点subTree开始，搜索结点current的父结点。若找到，则返回父结点地址，否则返回NULL
 template <class T>
-BinTreeNode<T> *BinaryTree<T>::Parent(BinTreeNode<T> *subTree, BinTreeNode<T> *current)
+BinTreeNode<T> *BinaryTree<T>::Parent(BinTreeNode<T> *subTree, BinTreeNode<T> *current) const
 {
     if (subTree == NULL) return NULL;
     if (subTree->leftChild == current || subTree->rightChild == current)
         return subTree;    //找到，返回父结点subTree
     BinTreeNode<T> *p;
     if (p = Parent((subTree->leftChild, current)) != NULL) return p;        //递归在左子树中搜索
-    else return Parent((subTree-rightChild, current));                      //递归在右子树中搜索
+    else return Parent((subTree->rightChild, current));                      //递归在右子树中搜索
 }
 
 //私有函数：搜索并输出根为subTree的二叉树
 template <class T>
-void BinaryTree<T>::Traverse(BinTreeNode<T> *subTree, ostream &out)
+void BinaryTree<T>::traverse(BinTreeNode<T> *subTree, ostream &out) const
 {
     if (subTree != NULL)
     {
         out << subTree->data << " ";                //输出subTree的值
-        Traverse(subTree->leftChild, out);          //递归搜索并输出subTree的左子树
-        Traverse(subTree->rightChild, out);          //递归搜索并输出subTree的右子树
+        traverse(subTree->leftChild, out);          //递归搜索并输出subTree的左子树
+        traverse(subTree->rightChild, out);          //递归搜索并输出subTree的右子树
     }
 }
 
 //重载操作：输入并建立一棵二叉树Tree,in为输入流对象
 template <class T>
 istream &operator >> (istream &in, BinaryTree<T> &Tree)
-{CreateBinTree(in, Tree.root); return in;}
+{Tree.CreateBinTree(in, Tree.root); return in;}
 
 //重载操作：输出一棵二叉树Tree，out是输出流对象
 template <class T>
 ostream &operator << (ostream &out, BinaryTree<T> &Tree)
 {
     out << "二叉树的前序遍历\n";
-    Tree.Traverse(Tree.root, out);              //从根开始输出
+    Tree.traverse(Tree.root, out);              //从根开始输出
     out << endl; return out;
 }
 
@@ -139,10 +145,10 @@ void BinaryTree<T>::CreateBinTreeByList(istream &in, BinTreeNode<T> *&subTree)
     {
         switch (ch)
         {
-            case '(': s.Push(p); k = 1; break;          //进入子树
-            case ')': s.Pop(t); break;                  //退出子树
+            case '(': s.push(p); k = 1; break;          //进入子树
+            case ')': s.pop(t); break;                  //退出子树
             case ',': k = 2; break;
-        default: p = new BinTreeNode(ch);
+        default: p = new BinTreeNode<T>(ch);
             if (p == NULL) {cerr << "存储分配错误！" << endl; exit(1);}
             if (subTree == NULL) subTree = p;
             else if (k == 1) {s.getTop(t); t->leftChild = p;}               //链入*t的左子女
@@ -154,14 +160,14 @@ void BinaryTree<T>::CreateBinTreeByList(istream &in, BinTreeNode<T> *&subTree)
 
 //私有函数：这个函数返回一个指针，它给出一个以orignode为根的二叉树的副本
 template <class T>
-BinTreeNode<T> *BinaryTree<T>::Copy(BinTreeNode<T> *orignode)
+BinTreeNode<T> *BinaryTree<T>::copy(BinTreeNode<T> *orignode) const
 {
     if (orignode == NULL) return NULL;                          //根为空，返回空指针
     BinTreeNode<T> *temp = new BinTreeNode<T>;                  //创建空结点
     if (temp == NULL) {cerr << "存储分配错误！" << endl; exit(1);}
     temp->data = orignode->data;                                //传送数据
-    temp->leftChild = Copy(orignode->leftChild);                //复制左子女
-    temp->rightChild = Copy(orignode->rightChild);              //复制右子女
+    temp->leftChild = copy(orignode->leftChild);                //复制左子女
+    temp->rightChild = copy(orignode->rightChild);              //复制右子女
     return temp;
 }
 
@@ -172,15 +178,26 @@ int operator == (const BinaryTree<T> &s, const BinaryTree<T> &t)
 
 //如果a和b的子树不等同，则函数返回false，否则返回true
 template <class T>
-bool equal(BinTreeNode<T> *a, BinTreeNode<T> *b)
+bool equal(const BinTreeNode<T> *a, const BinTreeNode<T> *b)
 {
     if (a == NULL && b == NULL) return true;                    //两者都为空
-    if (a !+ NULL && b != NULL && a->data == b->data            //两者跟结点数据相等
+    if (a != NULL && b != NULL && a->data == b->data            //两者跟结点数据相等
         && equal(a->leftChild, b->leftChild)                    //且左子树相同
         && equal(a->rightChild, b->rightChild))                 //且右子树相同
     return true;
     else return false;
 }
+
+//查找x，并返回该结点的地址
+template <class T>
+BinTreeNode<T> *BinaryTree<T>::find(BinTreeNode<T> *subTree, const T &x) const
+{
+    if (subTree == NULL) return NULL;                       //到达空结点，返回NULL
+    if (subTree->data == x) return subTree;                 //找到x，返回该结点地址
+    BinTreeNode<T> *temp = find(subTree->leftChild, x);
+    return (temp != NULL) ? temp : find(subTree->rightChild);
+}
+
 
 //递归前序遍历
 template <class T>
@@ -189,8 +206,8 @@ void BinaryTree<T>::preOrder(BinTreeNode<T> *subTree, void (*visit)(BinTreeNode<
     if (subTree != NULL)
     {
         visit(subTree);
-        preOrder(subtTree->leftChild, visit);
-        preOrder(subtTree->rightChild, visit);
+        preOrder(subTree->leftChild, visit);
+        preOrder(subTree->rightChild, visit);
     }
 }
 
@@ -200,9 +217,9 @@ void BinaryTree<T>::inOrder(BinTreeNode<T> *subTree, void (*visit)(BinTreeNode<T
 {
     if (subTree != NULL)
     {
-        preOrder(subtTree->leftChild, visit);
+        preOrder(subTree->leftChild, visit);
         visit(subTree);
-        preOrder(subtTree->rightChild, visit);
+        preOrder(subTree->rightChild, visit);
     }
 }
 
@@ -212,12 +229,13 @@ void BinaryTree<T>::postOrder(BinTreeNode<T> *subTree, void (*visit)(BinTreeNode
 {
     if (subTree != NULL)
     {
-        preOrder(subtTree->leftChild, visit);
-        preOrder(subtTree->rightChild, visit);
+        preOrder(subTree->leftChild, visit);
+        preOrder(subTree->rightChild, visit);
         visit(subTree);
     }
 }
 
+//按广义表的形式将二叉树输出
 template <class T>
 void PringBinTreeByList(BinTreeNode<T> *subTree)
 {
@@ -240,7 +258,7 @@ void PringBinTreeByList(BinTreeNode<T> *subTree)
 template <class T>
 void BinaryTree<T>::leverOrder(void (*visit)(BinTreeNode<T> *current))
 {
-    Queue<BinTreeNode<T> * > Q;
+    LinkedQueue<BinTreeNode<T> * > Q;
     BinTreeNode<T> *current = root;
     Q.EnQueue(current);
     while (!Q.isEmpty())                                //队列不为空
@@ -249,6 +267,38 @@ void BinaryTree<T>::leverOrder(void (*visit)(BinTreeNode<T> *current))
         if (current->leftChild != NULL) Q.EnQueue(current->leftChild);        //左子女进队
         if (current->rightChild != NULL) Q.EnQueue(current->rightChild);      //右子女进队
     }
+}
+
+//对一棵树的所有叶子结点，从左往右连接成一条单链表
+//current为树的根结点，last为链表表头首地址
+template <class T>
+void BinaryTree<T>::leafLinkedList(BinTreeNode<T> *current, LinkNode<T> *&last)
+{
+    if (current == NULL) return;
+    if (current->leftChild == NULL && current->rightChild == NULL)                  //均无左右子女为叶子结点
+    {
+        LinkNode<T> *newNode = new LinkNode<T>(current->data);
+        if (newNode == NULL) {cerr << "存储分配错误！" << endl; exit(1);}
+        last->link = newNode;
+        last = last->link;
+    }
+    else
+    {
+        leafLinkedList(current->leftChild, last);                              //递归对左子树叶子结点建链
+        leafLinkedList(current->rightChild, last);                             //递归对右子树叶子结点建链
+    }
+}
+
+////根据值找到该结点，并通过引用返回存储所有祖先结点的栈
+template<class T>
+bool BinaryTree<T>::findAncestors(BinTreeNode<T> *current, const T &item, Stack<BinTreeNode<T> *> &s) const
+{
+    if (current == NULL) return false;                      //到达空结点，返回false
+    //所寻找的值在当前结点的左子树或右子树，该结点进栈
+    if (findAncestors(current->leftChild, item, s) || findAncestors(current->rightChild, item, s))
+    {s.push(current); return true;}                         //将该结点进栈
+    if (current->data == item) return true;                 //找到储存值所在的结点
+    return false;
 }
 
 #endif //BINARYTREE_H
