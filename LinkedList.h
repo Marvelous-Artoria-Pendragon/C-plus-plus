@@ -19,7 +19,7 @@ template <class T>
 class LinkedList          //带表头结点的非循环单链表
 {
     public:
-        LinkedList(LinkNode<T> *other = new LinkNode<T>): {first = other; length = 0;}               //构造函数,默认带空表头
+        LinkedList(LinkNode<T> *other = new LinkNode<T>) {first = other; length = 0;}               //构造函数,默认带空表头
         LinkedList(const T &x) {first = new LinkNode<T>(x);}                           //构造函数，空表头有初始值
         LinkedList(LinkedList<T> &L);                               //复制构造函数
         ~LinkedList() {makeEmpty();}                          //析构函数
@@ -105,7 +105,7 @@ template <class T>
 bool LinkedList<T>::getData(int i, T &x) const
 {
     //取出链表中第i个元素的值
-    LinkNode<T> *current = Locate(i);
+    LinkNode<T> *current = locate(i);
     if (current == NULL) return false;               //i值不合理
     x = current->data; return true;                 //搜索成功，通过引用返回，函数返回true
 };
@@ -114,7 +114,7 @@ template <class T>
 void LinkedList<T>::setData(int i, T &x)
 {
     //给链表中第i个元素赋值x
-    LinkNode<T> *current = Locate(i);
+    LinkNode<T> *current = locate(i);
     if (current == NULL) return;                    //i值不合理
     current->data = x;
 }
@@ -123,7 +123,7 @@ template <class T>
 bool LinkedList<T>::insert(int i, T &x)
 {
     //将新元素x插入在链表中第i个结点之后
-    LinkNode<T> *current = Locate(i);
+    LinkNode<T> *current = locate(i);
     if (current == NULL) return false;              //插入不成功
     LinkNode<T> *newNode = new LinkNode<T>(x);
     if (newNode == NULL) {cerr << "存储分配错误！" <<endl; exit(1);}
