@@ -1,7 +1,6 @@
 #ifndef STACK_H
 #define STACK_H
 
-#include <assert.h>
 #include <iostream>
 using namespace std;
 //const int STACK_INCREASMENT = 20;           //栈溢出时扩展空间的增量
@@ -12,11 +11,11 @@ class Stack
 {
     public:
         Stack(){};  //构造函数
-        virtual void Push(const T &x) = 0;      //新元素x进栈
-        virtual bool Pop(T &x) = 0;             //栈顶元素出栈，由x返回
+        virtual void push(const T &x) = 0;      //新元素x进栈
+        virtual bool pop(T &x) = 0;             //栈顶元素出栈，由x返回
         virtual bool getTop(T &x) const = 0;    //读取栈顶元素，由x返回
-        virtual bool IsEmpty() const = 0;       //判断栈是否为空
-        virtual bool IsFull() const = 0;        //判断栈是否为满
+        virtual bool isEmpty() const = 0;       //判断栈是否为空
+        virtual bool isFull() const = 0;        //判断栈是否为满
         virtual int getSize() const = 0;        //计算栈中元素个数
 };
 
@@ -27,11 +26,11 @@ class SeqStack: public Stack<T>
     public:
         SeqStack(int sz = 50);                              //建立一个空栈
         ~SeqStack() {delete[] elements;}                    //析构函数
-        virtual void Push(const T &x);                      //如果IsFull(),则溢出处理；否则把x插入到栈的栈顶
-        virtual bool Pop(T &x);                             //取出栈顶元素，赋值给x
+        virtual void push(const T &x);                      //如果isFull(),则溢出处理；否则把x插入到栈的栈顶
+        virtual bool pop(T &x);                             //取出栈顶元素，赋值给x
         virtual bool getTop(T &x) const;                    //获取栈顶元素的拷贝给x，不删除栈顶元素
-        virtual bool IsEmpty() const {return (top == -1) ? true:false;}             
-        virtual bool IsFull() const {return (top == maxSize - 1) ? true:false;}
+        virtual bool isEmpty() const {return (top == -1) ? true:false;}             
+        virtual bool isFull() const {return (top == maxSize - 1) ? true:false;}
         virtual int getSize() const {return top + 1;}
         void makeEmpty() {top = -1;}                        //清空栈的内容
         //输出栈中元素的操作
@@ -66,16 +65,16 @@ void SeqStack<T>::overflowProcess ()
 };
 
 template <class T>
-void SeqStack<T>::Push(const T &x)
+void SeqStack<T>::push(const T &x)
 {
-    if (IsFull() == true) overflowProcess();
+    if (isFull() == true) overflowProcess();
     elements[++top] = x;
 };
 
 template <class T>
-bool SeqStack<T>::Pop(T &x)
+bool SeqStack<T>::pop(T &x)
 {
-    if (IsEmpty() == true) return false;
+    if (isEmpty() == true) return false;
     x = elements[top--];
     return true;
 };
@@ -83,7 +82,7 @@ bool SeqStack<T>::Pop(T &x)
 template <class T>
 bool SeqStack<T>::getTop(T &x) const
 {
-    if (IsEmpty() == true) return false;
+    if (isEmpty() == true) return false;
     x = elements[top];
     return true;
 };
