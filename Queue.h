@@ -1,4 +1,6 @@
 /*链式队列*/
+#ifndef QUEUE_H
+#define QUEUE_H
 #include <iostream>
 #include "LinkedList.h"
 
@@ -12,9 +14,9 @@ class LinkedQueue
         bool EnQueue(const T &x);                                                    //将x加入队列中
         bool DeQueue(T &x);                                                          //取出队头元素，x返回其值
         bool getFront(T &x) const;                                                   //查看队头元素的值
+        int getSize() const;                                                         //求队列元素个数
         void makeEmpty();                                                            //置空队列
         bool isEmpty() const {return rear == NULL ? true : false;}                   //判断队列是否为空
-        int getSize() const;                                                         //求队列元素个数
         template<class Y>
         friend ostream & operator << (ostream &os, LinkedQueue<Y> &Q);               //重载输出流
     protected:
@@ -25,9 +27,11 @@ class LinkedQueue
 template <class T>
 void LinkedQueue<T>::makeEmpty()
 {
+    if (rear == NULL) return;
     LinkNode<T> *del;
-    while (rear->link != NULL)                           //逐个删除队列中的结点
-    {del = rear; rear = rear->link; delete del;}
+    while (rear->link != rear)                           //逐个删除队列中的结点
+    {del = rear->link; delete del;}
+    delete rear;
 }
 
 //将新元素x插入队列的队尾(链式队列的链尾)
@@ -48,6 +52,7 @@ bool LinkedQueue<T>::EnQueue(const T &x)
         rear->link = newNode;                           //将新结点链上队尾
         rear = newNode;                                 //将rear指向新结点
     }
+    return true;
 }
 
 //若队列不为空，将队头结点从链表中删去，函数返回true，否则返回fasle
@@ -55,9 +60,11 @@ template <class T>
 bool LinkedQueue<T>::DeQueue(T &x)
 {
     if (isEmpty()) return false;                        //队空
-    LinkNode<T> *p = rear->link;
-    x = rear->link->data;
-    rear->link = p->link; delete p;                     //队头修改，释放原队头结点
+    LinkNode<T> *top = rear->link;
+    x = top->data;
+    rear->link = top->link;
+    if (top == rear) rear = NULL;                       //队列只剩下一个元素，删除该结点后，rear指针置空
+    delete top;                                         //队头修改，释放原队头结点
     return true;
 }
 
@@ -94,3 +101,4 @@ ostream &operator << (ostream &os, LinkedQueue<T> &Q)
     return os;
 }
 
+#endif //QUEUE_H
