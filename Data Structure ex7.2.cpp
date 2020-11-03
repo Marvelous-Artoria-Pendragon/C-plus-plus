@@ -6,6 +6,7 @@
 int main()
 {
     BinaryTree<char> BT('.');
+    /*
     cout << "请输入前序表达式(空结点用'.'表示)：";
     cin >> BT;  //ABC..DE.G..F...
     cout << "树的前序表达式为：" << endl << BT;
@@ -19,6 +20,12 @@ int main()
         s.pop(temp);
         cout << temp->data << " ";
     }
+    */
+    /*
+    BT.CreateBinTreeByList(cin);        //A(B(C,D(E(G),F)))
+    BinTreeNode<char> *root = BT.getRoot();
+    BT.PringBinTreeByList(root);
+    */
     system("pause");
     return 0;
 }
