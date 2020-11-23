@@ -27,10 +27,9 @@ class LinkedQueue
 template <class T>
 void LinkedQueue<T>::makeEmpty()
 {
-    if (rear == NULL) return;
-    LinkNode<T> *del;
+    if (rear == NULL) return; LinkNode<T> *del = NULL;
     while (rear->link != rear)                           //逐个删除队列中的结点
-    {del = rear->link; delete del;}
+    {del = rear->link; rear->link = del->link; delete del;}
     delete rear;
 }
 
@@ -51,8 +50,7 @@ bool LinkedQueue<T>::EnQueue(const T &x)
         newNode->link = rear->link;                     //新结点的link为队头
         rear->link = newNode;                           //将新结点链上队尾
         rear = newNode;                                 //将rear指向新结点
-    }
-    return true;
+    } return true;
 }
 
 //若队列不为空，将队头结点从链表中删去，函数返回true，否则返回fasle
@@ -60,12 +58,10 @@ template <class T>
 bool LinkedQueue<T>::DeQueue(T &x)
 {
     if (isEmpty()) return false;                        //队空
-    LinkNode<T> *top = rear->link;
-    x = top->data;
+    LinkNode<T> *top = rear->link; x = top->data;
     rear->link = top->link;
     if (top == rear) rear = NULL;                       //队列只剩下一个元素，删除该结点后，rear指针置空
-    delete top;                                         //队头修改，释放原队头结点
-    return true;
+    delete top; return true;                            //队头修改，释放原队头结点
 }
 
 //若队列不为空，则函数返回队头元素的值及true；若为空，返回false
@@ -73,8 +69,7 @@ template <class T>
 bool LinkedQueue<T>::getFront(T &x) const
 {
     if (isEmpty()) return false;                        //队空
-    x = rear->link->data;                               //取出队头元素中的数据值
-    return true;
+    x = rear->link->data; return true;                  //取出队头元素中的数据值
 }
 
 //求队列中元素个数
@@ -82,9 +77,7 @@ template <class T>
 int LinkedQueue<T>::getSize() const
 {
     LinkNode<T> *p = rear->link; int k = 0;
-    while (p->link != rear->link)
-    {p = p->link; k++;}
-    return k;
+    while (p->link != rear->link) {p = p->link; k++;} return k;
 }
 
 //重载输出流，输出整个队列元素
@@ -97,8 +90,6 @@ ostream &operator << (ostream &os, LinkedQueue<T> &Q)
     {
         os << ++i << ":" << p->data << endl;
         p = p->link;
-    }
-    return os;
+    } return os;
 }
-
 #endif //QUEUE_H

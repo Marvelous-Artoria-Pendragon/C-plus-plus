@@ -2,6 +2,7 @@
 #define STACK_H
 
 #include <iostream>
+#include <assert.h>
 using namespace std;
 //const int STACK_INCREASMENT = 20;           //栈溢出时扩展空间的增量
 //const int MAX_SIZE = 50;
