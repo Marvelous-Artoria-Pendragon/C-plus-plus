@@ -8,24 +8,21 @@
 template <class T>
 bool isBST(BinTreeNode<T> *subTree)
 {
-    if (subTree == NULL) return false;                                      //树为空
-    LinkedQueue<BinTreeNode<T> *> Q; BinTreeNode<T> *current = subTree;
-    Q.EnQueue(current);
-    while (!Q.isEmpty())                                //队列不为空
+    if (subTree == NULL) return true;
+    SeqStack<BinTreeNode<T> *> s; BinTreeNode<T> *p = subTree; s.push(p); //根进栈
+    T *pre = NULL;                                                      //记录前一个结点的值
+    do
     {
-        Q.DeQueue(current); 
-        if (current->leftChild != NULL) 
+        while (p != NULL) {s.push(p); p = p->leftChild;}
+        if (!s.isEmpty()) 
         {
-            if (current->leftChild->data >= current->data) return false;      //左子女的值大于等于父结点
-            else Q.EnQueue(current->leftChild);      //左子女进队
+            s.pop(p); cout << p->data << " ";
+            if (pre == NULL) pre = &(p->data);
+            else if (p->data <= *pre) return false;                      //不满足中序遍历值递增的条件
+            p = p->rightChild;
         }
-        
-        if (current->rightChild != NULL)
-        {
-            if (current->rightChild->data <= current->data) return false;     //右子女的值小于等于父结点
-            else Q.EnQueue(current->leftChild);      //左子女进队
-        }
-    } return true;                  //全部结点符合要求，返回true
+    } while (!s.isEmpty() || p != NULL);
+     return true;                  //全部结点符合要求，返回true
 }
 
 int main()
@@ -36,7 +33,7 @@ int main()
     //是：53 17 9 -1 -1 45 23 -1 -1 -1 78 65 -1 -1 87 81 -1 -1 94 -1 -1
     //不是：53 45 23 -1 -1 9 -1 -1 78 81 -1 -1 65 94 -1 -1 -1
     cout << BT;
-    BinTreeNode<int> *root = BT.getRoot();
+    BinTreeNode<int> *root = BT.getRoot(); int a = INT_MIN;
     if (isBST(root)) cout << "是二叉搜索树" << endl;
     else cout << "不是二叉搜索树" << endl;
 
