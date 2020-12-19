@@ -3,7 +3,7 @@
 #include "MinSpanTree.h"
 using namespace std;
 
-
+//算法实现在MinSpanTree头文件中
 int main()
 {
     Graphlnk<int, int> G; cin >> G;
@@ -19,6 +19,7 @@ int main()
     Prim(G, 0, *M);
     cout << *M << endl;
     delete M;
+
     system("pause");
     return 0;
 }
