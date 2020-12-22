@@ -33,7 +33,7 @@ template <class T, class E>
 class Graphlnk
 {
     public:
-        Graphlnk(int sz = 20);                                              //构造函数
+        Graphlnk(int sz = 20, bool flag = false);                           //构造函数
         ~Graphlnk();                                                        //析构函数
         T getValue(int i)                                                   //取位置为i的顶点中的值
             {return (i >= 0 && i < numVertices) ? NodeTable[i].data : 0;}
@@ -51,6 +51,7 @@ class Graphlnk
         friend istream &operator >> (istream &in, Graphlnk<M, N> &G);       //输入
     private:
         Vertex<T, E> *NodeTable;                                            //顶点表
+        bool vector;                                                       //标记是否为有向图
         int numVertices;                                                    //当前顶点数
         int numEdges;                                                       //当前边数
         int maxVertices;                                                    //最大顶点数
@@ -58,9 +59,9 @@ class Graphlnk
 
 //构造函数：建立一个空的邻接表
 template <class T, class E>
-Graphlnk<T, E>::Graphlnk(int sz)
+Graphlnk<T, E>::Graphlnk(int sz, bool flag)
 {
-    maxVertices = sz; numVertices = 0; numEdges = 0;
+    maxVertices = sz; numVertices = 0; numEdges = 0; vector = flag;
     NodeTable = new Vertex<T, E>[maxVertices]();                              //创建顶点表数组
     if (NodeTable == NULL) {cerr << "顶点表存储分配错误！" << endl; exit(1);}
 }
@@ -78,6 +79,7 @@ Graphlnk<T, E>::~Graphlnk()
 }
 
 //重载输入
+//verctor为true表示有向图，false为无向图输入
 template <class T, class E>
 istream &operator >> (istream &in, Graphlnk<T, E> &G)
 {
@@ -96,9 +98,11 @@ istream &operator >> (istream &in, Graphlnk<T, E> &G)
             {cout << "边两端有误，请重新输入！\n"; continue;}
         newEdge = new Edge<T, E>(n, w, G.NodeTable[m].adj);      //头插入法链入m->n的边
         G.NodeTable[m].adj = newEdge;
-        newEdge = new Edge<T, E>(m, w, G.NodeTable[n].adj);      //头插入法链入n->m的边
-        G.NodeTable[n].adj = newEdge;
-        i++;
+        if (!G.vector)                                                 //无向图，建立对称
+        {
+            newEdge = new Edge<T, E>(m, w, G.NodeTable[n].adj);      //头插入法链入n->m的边
+            G.NodeTable[n].adj = newEdge;
+        } i++;
     } return in;
 }
 
